@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Random;
 
 import javax.swing.*;
 import javax.swing.SwingUtilities;
@@ -16,12 +17,12 @@ public class Client extends JFrame{
     private ObjectOutputStream output;
     private ObjectInputStream input;
     private String message = "";
-    private Sting serverIP;
+    private String serverIP;
     private Socket connectionSocket;
 
     //constructor
     public Client(String host){
-        super("ChatApp Client");
+        super("Coffee ChatApp - CLIENT");
         serverIP = host;                    // insert server IP
         userTypeHere = new JTextField();
         userTypeHere.setEditable(false);    // false until connection has been established
@@ -33,10 +34,17 @@ public class Client extends JFrame{
                 } // end actionPerformed
             } 
         );  
-        add(UserException, BorderLayout.SOUTH);
+        userTypeHere.setFont(userTypeHere.getFont().deriveFont(25f));
+        add(userTypeHere, BorderLayout.SOUTH);
         chatHistoryWindow = new JTextArea();
         add(new JScrollPane(chatHistoryWindow),BorderLayout.CENTER);
-        setSize(850,700); 
+        chatHistoryWindow.setEditable(false); // prevent user from typing in box
+        chatHistoryWindow.setFont(chatHistoryWindow.getFont().deriveFont(25f));
+
+        setIconImage(new ImageIcon("C:\\Users\\Monica\\Desktop\\Chat App_Server\\CoffeeIcon.png").getImage());  // find a way to not need the whole path??
+        ImageIcon image = new ImageIcon( "C:\\Users\\Monica\\Desktop\\Chat App_Server\\CoffeeIcon.png" ); 
+        
+        setSize(850,500); 
         setVisible(true);
     } // end constructor 
 
@@ -55,21 +63,20 @@ public class Client extends JFrame{
         }// end try-catch-catch-finally
     }
     
+    // est. socket between client and server
     private void connectToServer() throws IOException{
         showMessage("Attempting to connect...Please wait...\n");
-        //create socket bw client and another computer
-        //get server IP address and port number 
-        connection = new Socket(InetAddress.getByName(serverIP), 6666);
-        showMessage("You're now connected to " + connection.getInetAddress().getHostName());
+        connectionSocket = new Socket(InetAddress.getByName(serverIP), 6666);
+        showMessage("You're now connected to " + connectionSocket.getInetAddress().getHostName());
     } // end method connectToServer
     
     // set up streams to send/recieve messages
-    private void setupStreams() throws IOException{
-        output = new ObjectOutputStream(connection.getOutputStream());
+    private void establishIOStreams() throws IOException{
+        output = new ObjectOutputStream(connectionSocket.getOutputStream());
         output.flush();
-        input = new ObjectInputStream(connection.getInputStream());
+        input = new ObjectInputStream(connectionSocket.getInputStream());
         showMessage("\nStreams have been set up- you may begin chatting \n");
-    } // end method setupStreams
+    } // end method establishIOStreams
     
     // while chatting to server
     private void chatExchange() throws IOException{
@@ -77,22 +84,21 @@ public class Client extends JFrame{
         do{
             try{
                 message = (String) input.readObject();
-                // appear for user in new chat window
                 showMessage("\n"+message);
             }catch(ClassNotFoundException cnfexception){
                 showMessage("\n Invalid input. \n");
             }
-        } while(!message.equals("SERVER - END"));
+        } while(!message.equals("SERVER - END") || !message.equals("CLIENT - END"));
     } // end method
     
     // close streams and sockets
     private void closeApp(){
-        showMessage("\n Closing streams and sockets...\n");
-        permissionToType(false);
+        showMessage("\n Closing streams and sockets...\n"); // inform user of function
+        permissionToType(false);                            
         try{
             output.close();
             input.close();
-            connection.close();
+            connectionSocket.close();
         } catch(IOException ioe){
             ioe.printStackTrace();
         } // end try/catch
@@ -125,7 +131,7 @@ public class Client extends JFrame{
         SwingUtilities.invokeLater(
             new Runnable(){
                 public void run(){
-                    userTypeHere.setEdiable(torf);
+                    userTypeHere.setEditable(torf);
                 } // end run()
             } 
         ); // end invoke later
