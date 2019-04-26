@@ -102,6 +102,7 @@ public class Client extends JFrame{
         } catch(IOException ioe){
             ioe.printStackTrace();
         } // end try/catch
+        showMessage("\n Disconnected from server.");
     } // end method closeApp()
     
     // send msg to user on server  
