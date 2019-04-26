@@ -67,7 +67,7 @@ public class Client extends JFrame{
     private void connectToServer() throws IOException{
         showMessage("Attempting to connect...Please wait...\n");
         connectionSocket = new Socket(InetAddress.getByName(serverIP), 6666);
-        showMessage("You're now connected to " + connectionSocket.getInetAddress().getHostName());
+        showMessage("CLIENT is now connected to " + connectionSocket.getInetAddress().getHostName());
     } // end method connectToServer
     
     // set up streams to send/recieve messages
