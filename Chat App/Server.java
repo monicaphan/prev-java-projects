@@ -3,6 +3,7 @@ import java.net.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Scanner;
+import java.io.File;
 
 import javax.swing.*;
 import javax.swing.JScrollPane;
@@ -25,7 +26,7 @@ public class Server extends JFrame{
 
     //constructor  method: GUI
     public Server(){
-        super("ChatApp Instant Messenger");
+        super("Coffee ChatApp - HOST");
         userTypeHere = new JTextField();
         userTypeHere.setEditable(false); // can only type if userA is connected to userB
         userTypeHere.addActionListener(
@@ -37,9 +38,16 @@ public class Server extends JFrame{
             } //end actionPerformed
         }); // end ActionListener
         add(userTypeHere, BorderLayout.SOUTH); 
+        userTypeHere.setFont(userTypeHere.getFont().deriveFont(25f));
         chatHistoryWindow = new JTextArea();
+        chatHistoryWindow.setEditable(false);
+        chatHistoryWindow.setFont(chatHistoryWindow.getFont().deriveFont(25f));
         add(new JScrollPane(chatHistoryWindow));
-        setSize(850,700); 
+
+        setIconImage(new ImageIcon("C:\\Users\\Monica\\Desktop\\Chat App_Server\\CoffeeIcon.png").getImage());  // find a way to not need the whole path??
+        ImageIcon image = new ImageIcon( "C:\\Users\\Monica\\Desktop\\Chat App_Server\\CoffeeIcon.png" ); 
+
+        setSize(850,500); 
         setVisible(true);
     } // end constructor
     
@@ -64,14 +72,6 @@ public class Server extends JFrame{
         } // end try-catch
     } // end runChatApp()
 
-    // Delete?
-    // method to set username
-    private String setUsername(){
-        Scanner scan = new Scanner(System.in);
-        showMessage("Please enter a screen-name: ");
-        String name=scan.nextLine();
-        return name;
-    }
 
     //method to wait for connection
     private void waitForConnection() throws IOException{
@@ -100,7 +100,7 @@ public class Server extends JFrame{
             }catch(ClassNotFoundException classNotFoundException){
                 showMessage("\n User attempted to send invalid input. \n");
             } // end try/catch
-        }while(!message.equals("CLIENT - END"));
+        }while(!message.equals("CLIENT - END") || (!message.equals("SERVER - END")));
     } // end chatExchange method
 
     // terminates streams and sockets
